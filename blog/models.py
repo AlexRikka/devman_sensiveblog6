@@ -14,6 +14,10 @@ class PostQuerySet(models.QuerySet):
     def popular(self):
         return self.annotate(
             likes_count=Count('likes')).order_by('-likes_count')
+        
+    def fresh(self):
+        return self.order_by('-published_at')
+
 
     def fetch_with_comments_count(self):
         """Получает посты с количеством комментариев в виде списка.
@@ -24,8 +28,8 @@ class PostQuerySet(models.QuerySet):
         комментариев с сортировкой по лайкам.
         """
         posts_ids = [post.id for post in self]
-        return Post.objects.filter(id__in=posts_ids).annotate(
-            comments_count=Count('comments'))
+        return list(Post.objects.filter(id__in=posts_ids).annotate(
+            comments_count=Count('comments', distinct=True)))
 
 
 class TagQuerySet(models.QuerySet):
