@@ -51,9 +51,7 @@ def index(request):
         .fetch_with_comments_count()
 
     fresh_posts = Post.objects.order_by('-published_at')[:5]
-    post_ids = [post.id for post in fresh_posts]
-    fresh_posts_pref = fresh_posts.filter(
-        id__in=post_ids).prefetch_related('author', 'tags')
+    fresh_posts_pref = fresh_posts.prefetch_related('author', 'tags')
     fresh_posts_annot = fresh_posts_pref.annotate(
         comments_count=Count('comments', distinct=True))
     most_fresh_posts = list(fresh_posts_annot)
