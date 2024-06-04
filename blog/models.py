@@ -14,10 +14,9 @@ class PostQuerySet(models.QuerySet):
     def popular(self):
         return self.annotate(
             likes_count=Count('likes')).order_by('-likes_count')
-        
+
     def fresh(self):
         return self.order_by('-published_at')
-
 
     def fetch_with_comments_count(self):
         """Получает посты с количеством комментариев в виде списка.
