@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Count, Min
 
 
 class PostQuerySet(models.QuerySet):
@@ -27,8 +27,10 @@ class PostQuerySet(models.QuerySet):
         комментариев с сортировкой по лайкам.
         """
         posts_ids = [post.id for post in self]
-        return list(Post.objects.filter(id__in=posts_ids).annotate(
-            comments_count=Count('comments', distinct=True)))
+        return list(Post.objects.filter(id__in=posts_ids)
+                    .annotate(comments_count=Count('comments', distinct=True),
+                              tag_title=Min('tags__title'))
+                    .select_related('author'))
 
 
 class TagQuerySet(models.QuerySet):
