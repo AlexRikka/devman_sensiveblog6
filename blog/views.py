@@ -63,7 +63,7 @@ def post_detail(request, slug):
             'author': comment.author.username,
         })
 
-    likes = post.likes.all()
+    post_likes = Post.objects.popular().filter(id=post.id).all()[0]
     related_tags = post.tags.popular()
 
     serialized_post = {
@@ -71,7 +71,7 @@ def post_detail(request, slug):
         'text': post.text,
         'author': post.author.username,
         'comments': serialized_comments,
-        'likes_amount': likes.count,
+        'likes_amount': post_likes.likes_count,
         'image_url': post.image.url if post.image else None,
         'published_at': post.published_at,
         'slug': post.slug,
